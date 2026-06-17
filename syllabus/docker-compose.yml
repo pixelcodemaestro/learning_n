@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  web:
+    image: nginx:alpine
+    container_name: devops_syllabus_nadhiya
+    ports:
+      - "2311:80"
+    volumes:
+      - ./src:/usr/share/nginx/html
+    restart: always

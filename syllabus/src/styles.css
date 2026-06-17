@@ -1,0 +1,159 @@
+:root {
+    --bg-color: #0a0e17;
+    --card-bg: rgba(16, 22, 37, 0.6);
+    --text-color: #e2e8f0;
+    --neon-blue: #00f0ff;
+    --neon-purple: #bd00ff;
+    --neon-green: #39ff14;
+    --border-color: rgba(0, 240, 255, 0.2);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: radial-gradient(circle at 50% 50%, #141b2d 0%, #0a0e17 100%);
+}
+
+.container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 40px auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+h1 {
+    font-size: 3rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin: 0;
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+p.subtitle {
+    color: #8a99ad;
+    font-size: 1.1rem;
+    margin-top: 10px;
+}
+
+/* Grid Layout for Main Page */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+/* VFX Glowing Cards */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: 0.5s;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
+}
+
+.card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+/* Custom Color Themes per Module */
+.m1:hover { border-color: var(--neon-blue); box-shadow: 0 0 30px rgba(0, 240, 255, 0.25); }
+.m2:hover { border-color: var(--neon-purple); box-shadow: 0 0 30px rgba(189, 0, 255, 0.25); }
+.m3:hover { border-color: var(--neon-green); box-shadow: 0 0 30px rgba(57, 255, 20, 0.25); }
+
+/* VFX Futuristic Buttons */
+.btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: transparent;
+    color: #fff;
+    border: 2px solid var(--neon-blue);
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 0 0 var(--neon-blue);
+}
+
+.btn:hover {
+    box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.4);
+    text-shadow: 0 0 5px #fff;
+    background: rgba(0, 240, 255, 0.1);
+}
+
+.btn-purple { border-color: var(--neon-purple); }
+.btn-purple:hover { box-shadow: inset 0 0 20px rgba(189, 0, 255, 0.5), 0 0 20px rgba(189, 0, 255, 0.4); }
+
+.btn-green { border-color: var(--neon-green); }
+.btn-green:hover { box-shadow: inset 0 0 20px rgba(57, 255, 20, 0.5), 0 0 20px rgba(57, 255, 20, 0.4); }
+
+/* Subpage Syllabus Details Styling */
+.syllabus-details {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 40px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.syllabus-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.syllabus-list li {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+}
+
+.syllabus-list li::before {
+    content: "⚡";
+    margin-right: 15px;
+    color: var(--neon-blue);
+}

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A Moment With You</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose:    #ff6b8a;
+      --gold:    #f7c59f;
+      --deep:    #1a0a14;
+      --cream:   #fff5f8;
+      --glow:    #ff2d6b;
+      --violet:  #c471ed;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--deep);
+      font-family: 'Playfair Display', serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── PARTICLES CANVAS ── */
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── STAGE ── */
+    #stage {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    /* ── FRAME ── */
+    .frame {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: none;
+    }
+    .frame.active { opacity: 1; pointer-events: auto; }
+
+    /* ── PORTRAIT WRAPPER ── */
+    .portrait-wrap {
+      position: relative;
+      width: min(460px, 88vw);
+      aspect-ratio: 3/4;
+      border-radius: 24px;
+      overflow: visible;
+    }
+
+    .portrait-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 24px;
+      display: block;
+      box-shadow: 0 0 60px 20px rgba(255,45,107,0.35), 0 0 120px 40px rgba(196,113,237,0.2);
+    }
+
+    /* Placeholder when no real image */
+    .portrait-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      background: linear-gradient(135deg, #2a0a1f 0%, #1a0a14 100%);
+      color: var(--rose);
+      border: 2px dashed rgba(255,107,138,0.4);
+      flex-direction: column;
+      gap: 12px;
+    }
+    .portrait-placeholder span {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    /* ── GLITTER BORDER ── */
+    .glitter-border {
+      position: absolute;
+      inset: -6px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, var(--rose), var(--violet), var(--gold), var(--rose));
+      background-size: 300% 300%;
+      animation: borderGlow 3s ease infinite;
+      z-index: -1;
+      filter: blur(2px);
+    }
+    @keyframes borderGlow {
+      0%   { background-position: 0% 50%;   opacity: 0.8; }
+      50%  { background-position: 100% 50%; opacity: 1;   }
+      100% { background-position: 0% 50%;   opacity: 0.8; }
+    }
+
+    /* ── CAPTION ── */
+    .caption {
+      margin-top: 28px;
+      text-align: center;
+      color: var(--cream);
+    }
+    .caption h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      color: var(--rose);
+      text-shadow: 0 0 20px rgba(255,45,107,0.6);
+      animation: floatText 3s ease-in-out infinite;
+    }
+    .caption p {
+      margin-top: 8px;
+      font-size: clamp(0.82rem, 2.5vw, 1rem);
+      font-style: italic;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.04em;
+    }
+    @keyframes floatText {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-6px); }
+    }
+
+    /* ── PER-FRAME VFX CLASSES ── */
+
+    /* Frame 1 – Float + soft pulse */
+    #frame1 .portrait-img, #frame1 .portrait-placeholder {
+      animation: float1 4s ease-in-out infinite;
+    }
+    @keyframes float1 {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-14px) scale(1.03); }
+    }
+
+    /* Frame 2 – Tilt sway */
+    #frame2 .portrait-img, #frame2 .portrait-placeholder {
+      animation: sway2 5s ease-in-out infinite;
+    }
+    @keyframes sway2 {
+      0%, 100% { transform: rotate(-3deg) scale(1); }
+      50%       { transform: rotate(3deg)  scale(1.04); }
+    }
+
+    /* Frame 3 – Heartbeat */
+    #frame3 .portrait-img, #frame3 .portrait-placeholder {
+      animation: heart3 1.6s ease-in-out infinite;
+    }
+    @keyframes heart3 {
+      0%, 100% { transform: scale(1);    box-shadow: 0 0 40px 10px rgba(255,45,107,0.3); }
+      14%       { transform: scale(1.08); box-shadow: 0 0 80px 30px rgba(255,45,107,0.7); }
+      28%       { transform: scale(1);    box-shadow: 0 0 40px 10px rgba(255,45,107,0.3); }
+      42%       { transform: scale(1.05); box-shadow: 0 0 60px 20px rgba(255,45,107,0.5); }
+    }
+
+    /* Frame 4 – Spin-zoom entrance then gentle rotate */
+    #frame4 .portrait-img, #frame4 .portrait-placeholder {
+      animation: spin4 6s ease-in-out infinite;
+    }
+    @keyframes spin4 {
+      0%   { transform: rotate(0deg)   scale(1);    filter: brightness(1); }
+      25%  { transform: rotate(2deg)   scale(1.05); filter: brightness(1.15); }
+      50%  { transform: rotate(0deg)   scale(1.02); filter: brightness(1); }
+      75%  { transform: rotate(-2deg)  scale(1.05); filter: brightness(1.15); }
+      100% { transform: rotate(0deg)   scale(1);    filter: brightness(1); }
+    }
+
+    /* ── TRANSITION OVERLAY ── */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, rgba(255,45,107,0.3) 0%, transparent 70%);
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    #overlay.flash { opacity: 1; }
+
+    /* ── CONTROLS ── */
+    #controls {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 20;
+    }
+
+    .nav-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,107,138,0.4);
+      color: var(--rose);
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-btn:hover { background: rgba(255,45,107,0.25); transform: scale(1.1); }
+
+    #dots {
+      display: flex;
+      gap: 10px;
+    }
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      border: 1px solid rgba(255,107,138,0.5);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .dot.active { background: var(--rose); transform: scale(1.4); }
+
+    /* ── AUDIO BUTTON ── */
+    #audioBtn {
+      position: fixed;
+      top: 24px; right: 24px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,107,138,0.4);
+      color: var(--rose);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      z-index: 20;
+      transition: background 0.2s;
+    }
+    #audioBtn:hover { background: rgba(255,45,107,0.25); }
+
+    /* ── FRAME COUNTER ── */
+    #counter {
+      position: fixed;
+      top: 24px; left: 24px;
+      font-family: 'Dancing Script', cursive;
+      color: rgba(255,255,255,0.4);
+      font-size: 1rem;
+      z-index: 20;
+    }
+
+    /* ── HEARTS BURST ── */
+    .heart-burst {
+      position: fixed;
+      pointer-events: none;
+      font-size: 1.6rem;
+      z-index: 30;
+      animation: burstUp 1.4s ease-out forwards;
+    }
+    @keyframes burstUp {
+      0%   { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-120px) scale(0.4); }
+    }
+
+    /* ── MOUSE TRAIL CANVAS ── */
+    #mouseTrail {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    body { cursor: none; }
+    #cursor {
+      position: fixed;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ff6b8a 0%, transparent 70%);
+      border: 1.5px solid rgba(255,107,138,0.8);
+      pointer-events: none;
+      z-index: 60;
+      transform: translate(-50%, -50%);
+      transition: transform 0.06s ease, width 0.15s, height 0.15s;
+      mix-blend-mode: screen;
+    }
+    #cursor.clicked { width: 30px; height: 30px; }
+
+    #hint {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26,10,20,0.92);
+      border: 1px solid rgba(255,107,138,0.3);
+      border-radius: 16px;
+      padding: 28px 36px;
+      text-align: center;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.95rem;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      max-width: 380px;
+      line-height: 1.7;
+      display: none;
+    }
+    #hint strong { color: var(--rose); }
+    #hint button {
+      margin-top: 18px;
+      background: var(--rose);
+      border: none;
+      color: white;
+      padding: 10px 28px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: 'Playfair Display', serif;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="mouseTrail"></canvas>
+<div id="cursor"></div>
+
+<canvas id="particles"></canvas>
+
+<div id="overlay"></div>
+
+<!-- Upload hint modal -->
+<div id="hint">
+  <strong>💖 Add Your 4 Photos</strong><br>
+  Place your portrait images inside<br>
+  <code style="color:var(--gold)">public/images/</code> as:<br><br>
+  <strong>photo1.jpg &nbsp; photo2.jpg</strong><br>
+  <strong>photo3.jpg &nbsp; photo4.jpg</strong><br><br>
+  Audio goes in <code style="color:var(--gold)">public/audio/Eppadi_Vandhaayo.mp3</code><br>
+  Then rebuild with <code>docker compose up --build</code>
+  <br>
+  <button onclick="document.getElementById('hint').style.display='none'">Got it ✓</button>
+</div>
+
+<div id="stage">
+
+  <!-- FRAME 1 -->
+  <div class="frame active" id="frame1">
+    <div class="portrait-wrap">
+      <div class="glitter-border"></div>
+      <img class="portrait-img" src="images/photo1.jpg"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+           alt="Photo 1">
+      <div class="portrait-placeholder" style="display:none">
+        💖<span>Place photo1.jpg in public/images/</span>
+      </div>
+    </div>
+    <div class="caption">
+      <h2>life.......</h2>
+      <p>good</p>
+    </div>
+  </div>
+
+  <!-- FRAME 2 -->
+  <div class="frame" id="frame2">
+    <div class="portrait-wrap">
+      <div class="glitter-border"></div>
+      <img class="portrait-img" src="images/photo2.jpg"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+           alt="Photo 2">
+      <div class="portrait-placeholder" style="display:none">
+        🌸<span>Place photo2.jpg in public/images/</span>
+      </div>
+    </div>
+    <div class="caption">
+      <h2>maddy.</h2>
+      <p>life is good.</p>
+    </div>
+  </div>
+
+  <!-- FRAME 3 -->
+  <div class="frame" id="frame3">
+    <div class="portrait-wrap">
+      <div class="glitter-border"></div>
+      <img class="portrait-img" src="images/photo3.jpg"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+           alt="Photo 3">
+      <div class="portrait-placeholder" style="display:none">
+        ✨<span>Place photo3.jpg in public/images/</span>
+      </div>
+    </div>
+    <div class="caption">
+      <h2>prasanth lusu.</h2>
+      <p>heratbeat.</p>
+    </div>
+  </div>
+
+  <!-- FRAME 4 -->
+  <div class="frame" id="frame4">
+    <div class="portrait-wrap">
+      <div class="glitter-border"></div>
+      <img class="portrait-img" src="images/photo4.jpg"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+           alt="Photo 4">
+      <div class="portrait-placeholder" style="display:none">
+        🌟<span>Place photo4.jpg in public/images/</span>
+      </div>
+    </div>
+    <div class="caption">
+      <h2>Ylovely.</h2>
+      <p>Now is cute.</p>
+    </div>
+  </div>
+
+</div><!-- /stage -->
+
+<!-- Counter -->
+<div id="counter">01 / 04</div>
+
+<!-- Audio toggle -->
+<button id="audioBtn" title="Toggle Music">🎵</button>
+
+<!-- Nav Controls -->
+<div id="controls">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <div id="dots">
+    <div class="dot active" data-i="0"></div>
+    <div class="dot" data-i="1"></div>
+    <div class="dot" data-i="2"></div>
+    <div class="dot" data-i="3"></div>
+  </div>
+  <button class="nav-btn" id="nextBtn">›</button>
+</div>
+
+<audio id="bgAudio" loop>
+  <source src="audio/Eppadi_Vandhaayo.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// ── MOUSE TRAIL VFX ───────────────────────────────────────
+const trailCanvas = document.getElementById('mouseTrail');
+const tctx        = trailCanvas.getContext('2d');
+const cursorEl    = document.getElementById('cursor');
+
+function resizeTrail() {
+  trailCanvas.width  = window.innerWidth;
+  trailCanvas.height = window.innerHeight;
+}
+resizeTrail();
+window.addEventListener('resize', resizeTrail);
+
+let mouseX = -200, mouseY = -200;
+let trailPoints = [];
+
+const TRAIL_EMOJIS = ['💖','✨','🌸','💫','⭐','💕','✦','🌟'];
+
+class TrailDot {
+  constructor(x, y) {
+    this.x     = x;
+    this.y     = y;
+    this.life  = 1.0;
+    this.decay = Math.random() * 0.025 + 0.018;
+    this.size  = Math.random() * 8 + 4;
+    this.hue   = Math.random() * 60 - 30; // rose/violet range
+    this.vx    = (Math.random() - 0.5) * 1.2;
+    this.vy    = (Math.random() - 0.5) * 1.2 - 0.5;
+  }
+  update() {
+    this.life -= this.decay;
+    this.x += this.vx;
+    this.y += this.vy;
+    this.size *= 0.97;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.life * 0.7);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+    grad.addColorStop(0, `hsl(${340 + this.hue}, 100%, 75%)`);
+    grad.addColorStop(1, `hsl(${300 + this.hue}, 80%, 50%)`);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+class TrailEmoji {
+  constructor(x, y) {
+    this.x     = x + (Math.random()-0.5)*30;
+    this.y     = y + (Math.random()-0.5)*30;
+    this.sym   = TRAIL_EMOJIS[Math.floor(Math.random()*TRAIL_EMOJIS.length)];
+    this.life  = 1.0;
+    this.decay = Math.random() * 0.015 + 0.01;
+    this.size  = Math.random() * 16 + 10;
+    this.vx    = (Math.random()-0.5)*1.5;
+    this.vy    = -(Math.random()*1.5 + 0.5);
+    this.rot   = (Math.random()-0.5)*0.2;
+    this.angle = 0;
+  }
+  update() {
+    this.life  -= this.decay;
+    this.x     += this.vx;
+    this.y     += this.vy;
+    this.angle += this.rot;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.life * 0.9);
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+    ctx.font = `${this.size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(this.sym, 0, 0);
+    ctx.restore();
+  }
+}
+
+let trailDots  = [];
+let trailEmoji = [];
+let emojiThrottle = 0;
+let dotThrottle   = 0;
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursorEl.style.left = mouseX + 'px';
+  cursorEl.style.top  = mouseY + 'px';
+
+  // Spawn trail dots continuously
+  dotThrottle++;
+  if (dotThrottle % 2 === 0) {
+    for (let i = 0; i < 3; i++) trailDots.push(new TrailDot(mouseX, mouseY));
+  }
+
+  // Spawn emoji trail less frequently
+  emojiThrottle++;
+  if (emojiThrottle % 10 === 0) {
+    trailEmoji.push(new TrailEmoji(mouseX, mouseY));
+  }
+});
+
+document.addEventListener('mousedown', () => {
+  cursorEl.classList.add('clicked');
+  // Big emoji burst on click
+  for (let i = 0; i < 5; i++) trailEmoji.push(new TrailEmoji(mouseX, mouseY));
+});
+document.addEventListener('mouseup', () => cursorEl.classList.remove('clicked'));
+
+function animTrail() {
+  tctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+
+  // Update & draw dots
+  trailDots = trailDots.filter(d => d.life > 0);
+  trailDots.forEach(d => { d.update(); d.draw(tctx); });
+
+  // Update & draw emojis
+  trailEmoji = trailEmoji.filter(e => e.life > 0);
+  trailEmoji.forEach(e => { e.update(); e.draw(tctx); });
+
+  requestAnimationFrame(animTrail);
+}
+animTrail();
+
+// ── PARTICLES ──────────────────────────────────────────────
+const canvas = document.getElementById('particles');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const SYMBOLS = ['❤', '✦', '★', '✿', '·', '✨'];
+class Particle {
+  constructor() { this.reset(true); }
+  reset(initial) {
+    this.x    = Math.random() * W;
+    this.y    = initial ? Math.random() * H : H + 20;
+    this.sym  = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+    this.size = Math.random() * 14 + 8;
+    this.speed= Math.random() * 0.6 + 0.2;
+    this.drift= (Math.random() - 0.5) * 0.4;
+    this.alpha= Math.random() * 0.5 + 0.1;
+    this.hue  = Math.random() * 60 - 30; // pink/rose range
+  }
+  update() {
+    this.y -= this.speed;
+    this.x += this.drift;
+    if (this.y < -30) this.reset(false);
+  }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    ctx.fillStyle   = `hsl(${340 + this.hue}, 90%, 70%)`;
+    ctx.font        = `${this.size}px serif`;
+    ctx.fillText(this.sym, this.x, this.y);
+    ctx.restore();
+  }
+}
+
+for (let i = 0; i < 55; i++) particles.push(new Particle());
+
+function animParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// ── SLIDESHOW ──────────────────────────────────────────────
+const frames  = document.querySelectorAll('.frame');
+const dots    = document.querySelectorAll('.dot');
+const counter = document.getElementById('counter');
+const overlay = document.getElementById('overlay');
+let current   = 0;
+let autoTimer = null;
+
+function showFrame(idx, dir) {
+  // flash
+  overlay.classList.add('flash');
+  setTimeout(() => overlay.classList.remove('flash'), 400);
+
+  frames[current].classList.remove('active');
+  dots[current].classList.remove('active');
+  current = (idx + frames.length) % frames.length;
+  frames[current].classList.add('active');
+  dots[current].classList.add('active');
+  counter.textContent = String(current + 1).padStart(2,'0') + ' / 04';
+
+  spawnHearts();
+  resetAuto();
+}
+
+function resetAuto() {
+  clearInterval(autoTimer);
+  autoTimer = setInterval(() => showFrame(current + 1), 6000);
+}
+resetAuto();
+
+document.getElementById('nextBtn').onclick = () => showFrame(current + 1);
+document.getElementById('prevBtn').onclick = () => showFrame(current - 1);
+dots.forEach(d => d.addEventListener('click', () => showFrame(+d.dataset.i)));
+
+// ── HEART BURST ───────────────────────────────────────────
+function spawnHearts() {
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  const EMOJIS = ['💖','💗','💓','✨','🌸','💕'];
+  for (let i = 0; i < 6; i++) {
+    const el = document.createElement('div');
+    el.className = 'heart-burst';
+    el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    el.style.left = (cx + (Math.random()-0.5)*200) + 'px';
+    el.style.top  = (cy + (Math.random()-0.5)*200) + 'px';
+    el.style.animationDelay = (Math.random()*0.4) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1800);
+  }
+}
+
+// ── AUDIO ─────────────────────────────────────────────────
+const audio    = document.getElementById('bgAudio');
+const audioBtn = document.getElementById('audioBtn');
+let   muted    = false;
+
+audioBtn.onclick = () => {
+  muted = !muted;
+  audio.muted = muted;
+  audioBtn.textContent = muted ? '🔇' : '🎵';
+};
+
+// Autoplay on first interaction
+document.body.addEventListener('click', function startAudio() {
+  audio.volume = 0.55;
+  audio.play().catch(() => {});
+  document.body.removeEventListener('click', startAudio);
+}, { once: true });
+
+// Show hint if images are placeholders
+window.addEventListener('load', () => {
+  const imgs = document.querySelectorAll('.portrait-img');
+  let missing = 0;
+  imgs.forEach(img => { if (!img.complete || img.naturalWidth === 0) missing++; });
+  if (missing === imgs.length) {
+    setTimeout(() => document.getElementById('hint').style.display = 'block', 800);
+  }
+});
+</script>
+</body>
+</html>
