@@ -3,7 +3,7 @@ version: "3.9"
 services:
   test-page:
     build: .
-    container_name: ayihdan-day-1
+    container_name: test-day-1
     ports:
-      - "1212:80"
+      - "1010:80"
     restart: unless-stopped
