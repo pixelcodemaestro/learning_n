@@ -1,8 +1,0 @@
-version: '3.8'
-services:
-  namlatic-report:
-    build: .
-    container_name: namlatic-weekly-report
-    ports:
-      - "8080:80"
-    restart: unless-stopped

@@ -2,7 +2,7 @@ version: '3.8'
 services:
   namlatic-report:
     build: .
-    container_name: namlatic-weekly-report
+    container_name: working
     ports:
-      - "8080:80"
+      - "8090:80"
     restart: unless-stopped
