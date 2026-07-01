@@ -1,0 +1,2 @@
+# Namlatic Report — fires every Monday and Friday at 11:00 AM
+0 11 * * 1,5 /usr/local/bin/generate-report.sh >> /var/log/cron.log 2>&1

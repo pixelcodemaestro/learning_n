@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Namlatic — Weekly Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --navy:#1e2a3a;--orange:#f97316;--blue:#3b82f6;
+  --green:#10b981;--yellow:#f59e0b;--rose:#f43f5e;
+  --purple:#8b5cf6;--slate:#64748b;
+  --light:#f1f5f9;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:var(--text);}
+.header{background:linear-gradient(135deg,var(--navy) 0%,#0f1117 100%);padding:28px 40px;}
+.header-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:16px;}
+.logo-box{width:52px;height:52px;background:var(--orange);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#fff;flex-shrink:0;}
+.header h1{font-size:22px;font-weight:800;color:#fff;}
+.header p{font-size:12px;color:#94a3b8;margin-top:3px;}
+.meta-bar{max-width:960px;margin:-18px auto 0;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:16px 24px;display:flex;flex-wrap:wrap;gap:16px;position:relative;z-index:2;}
+.meta-item{display:flex;flex-direction:column;gap:4px;}
+.meta-item label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;}
+.meta-item input{font-size:13px;font-weight:600;color:var(--text);border:none;border-bottom:1.5px solid var(--border);background:transparent;padding:2px 0;outline:none;width:180px;}
+.meta-item input:focus{border-bottom-color:var(--orange);}
+.toolbar{max-width:960px;margin:20px auto 0;padding:0 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.toolbar-label{font-size:12px;color:var(--muted);margin-right:4px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.btn:hover{opacity:.88;}
+.btn-orange{background:var(--orange);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-rose{background:var(--rose);color:#fff;}
+.btn-blue{background:var(--blue);color:#fff;}
+.btn-slate{background:#e2e8f0;color:var(--slate);}
+.btn-navy{background:var(--navy);color:#fff;}
+.btn-purple{background:var(--purple);color:#fff;}
+.main{max-width:960px;margin:24px auto 40px;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.full-col{grid-column:1/-1;}
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+.card-title{font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;}
+.card-body{padding:16px 18px;}
+.summary-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:72px;outline:none;color:var(--text);}
+.summary-input:focus{border-color:var(--orange);}
+.highlight-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;}
+.highlight-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;margin-top:6px;}
+.highlight-input{flex:1;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;resize:none;min-height:36px;color:var(--text);}
+.highlight-input:focus{border-color:var(--orange);}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--rose);font-size:16px;padding:4px;flex-shrink:0;}
+.task-item{border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;position:relative;}
+.task-item.completed{border-color:#10b98144;background:#10b98108;}
+.task-item.in-progress{border-color:#f59e0b44;background:#f59e0b08;}
+.task-item.blocked{border-color:#f43f5e44;background:#f43f5e08;}
+.task-item.planned{border-color:#3b82f644;background:#3b82f608;}
+.task-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;}
+.task-status-sel{border:1.5px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;font-weight:600;outline:none;cursor:pointer;background:#fff;flex-shrink:0;}
+.task-textarea{flex:1;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;resize:vertical;min-height:56px;outline:none;color:var(--text);}
+.task-textarea:focus{border-color:var(--blue);}
+.task-dates{display:flex;gap:16px;flex-wrap:wrap;}
+.date-field{display:flex;flex-direction:column;gap:4px;}
+.date-field label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.date-field input{border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;outline:none;color:var(--text);}
+.date-field input:focus{border-color:var(--blue);}
+.task-del{position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;color:var(--rose);font-size:16px;}
+.list-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;}
+.list-num{font-size:12px;font-weight:700;color:var(--navy);flex-shrink:0;min-width:20px;margin-top:8px;}
+.list-input{flex:1;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;resize:none;color:var(--text);}
+.list-input:focus{border-color:var(--purple);}
+
+/* Draft Manager */
+.draft-section{max-width:960px;margin:0 auto 40px;padding:0 24px;}
+.draft-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;}
+.draft-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--navy);}
+.draft-header-title{font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;}
+.draft-list{padding:12px 18px;}
+.draft-empty{text-align:center;padding:24px;color:var(--muted);font-size:13px;}
+.draft-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--light);}
+.draft-info{flex:1;}
+.draft-name{font-size:13px;font-weight:600;color:var(--text);}
+.draft-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.draft-actions{display:flex;gap:6px;}
+.dbtn{padding:5px 12px;border-radius:6px;border:none;font-size:12px;font-weight:600;cursor:pointer;}
+.dbtn-load{background:var(--blue);color:#fff;}
+.dbtn-dl{background:var(--green);color:#fff;}
+.dbtn-del{background:var(--rose);color:#fff;}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+@media print{.toolbar,.draft-section,.del-btn,.task-del,.btn,.no-print{display:none!important;}body{background:#fff;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-box">N</div>
+    <div>
+      <h1>Namlatic — Weekly Status Report</h1>
+      <p>Internal Report &middot; Submitted to MD every Monday &amp; Friday at 11:00 AM</p>
+    </div>
+  </div>
+</div>
+
+<div class="meta-bar">
+  <div class="meta-item"><label>Report Date</label><input id="meta-date" type="text" placeholder="e.g. 30 June 2026"></div>
+  <div class="meta-item"><label>Day</label><input id="meta-day" type="text" placeholder="Monday / Friday"></div>
+  <div class="meta-item"><label>Sprint #</label><input id="meta-sprint" type="text" placeholder="e.g. Sprint 4"></div>
+  <div class="meta-item"><label>Prepared By</label><input id="meta-by" type="text" placeholder="Prasanth - Product Manager"></div>
+  <div class="meta-item"><label>Submitted To</label><input id="meta-to" type="text" placeholder="Mourali - Managing Director"></div>
+</div>
+
+<div class="toolbar">
+  <span class="toolbar-label">Export:</span>
+  <button class="btn btn-rose" onclick="downloadPDF()">⬇ PDF</button>
+  <button class="btn btn-green" onclick="downloadExcel()">⬇ Excel</button>
+  <button class="btn btn-blue" onclick="window.print()">🖨 Print</button>
+  <div style="flex:1"></div>
+  <button class="btn btn-slate" onclick="saveDraft()">💾 Save Draft</button>
+  <button class="btn btn-orange" onclick="clearAll()">🗑 Clear All</button>
+</div>
+
+<div class="main">
+  <!-- Summary -->
+  <div class="card full-col">
+    <div class="card-header"><div class="card-title"><span>📝</span> Executive Summary</div></div>
+    <div class="card-body"><textarea class="summary-input" id="summary" placeholder="Write a 2–3 line summary..."></textarea></div>
+  </div>
+
+  <!-- Highlights -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span>🌟</span> Highlights</div>
+      <button class="btn btn-orange" style="padding:5px 12px;font-size:12px;" onclick="addHighlight()">+ Add</button>
+    </div>
+    <div class="card-body" id="highlights-list"></div>
+  </div>
+
+  <!-- Tasks -->
+  <div class="card full-col">
+    <div class="card-header">
+      <div class="card-title"><span>📋</span> Task Status</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-green"  style="padding:5px 12px;font-size:12px;" onclick="addTask('completed')">+ Done</button>
+        <button class="btn btn-orange" style="padding:5px 12px;font-size:12px;" onclick="addTask('in-progress')">+ In Progress</button>
+        <button class="btn btn-rose"   style="padding:5px 12px;font-size:12px;" onclick="addTask('blocked')">+ Blocked</button>
+        <button class="btn btn-blue"   style="padding:5px 12px;font-size:12px;" onclick="addTask('planned')">+ Planned</button>
+      </div>
+    </div>
+    <div class="card-body" id="tasks-list"></div>
+  </div>
+
+  <!-- Blockers -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span>⚠️</span> Blockers</div>
+      <button class="btn btn-rose" style="padding:5px 12px;font-size:12px;" onclick="addListItem('blockers-list')">+ Add</button>
+    </div>
+    <div class="card-body" id="blockers-list"></div>
+  </div>
+
+  <!-- Next Steps -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span>➡️</span> Next Steps</div>
+      <button class="btn btn-blue" style="padding:5px 12px;font-size:12px;" onclick="addListItem('next-list')">+ Add</button>
+    </div>
+    <div class="card-body" id="next-list"></div>
+  </div>
+</div>
+
+<!-- Draft Manager -->
+<div class="draft-section">
+  <div class="draft-card">
+    <div class="draft-header">
+      <div class="draft-header-title"><span>📂</span> Saved Drafts — All Versions</div>
+      <button class="btn btn-slate" style="font-size:12px;padding:5px 12px;" onclick="downloadAllDrafts()">⬇ Download All Drafts (JSON)</button>
+    </div>
+    <div class="draft-list" id="draft-list"><div class="draft-empty">No saved drafts yet. Click "Save Draft" above to save your first report.</div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── META ──────────────────────────────────────────────
+function loadMeta(m){
+  document.getElementById('meta-date').value   = m.date   ||'';
+  document.getElementById('meta-day').value    = m.day    ||'';
+  document.getElementById('meta-sprint').value = m.sprint ||'';
+  document.getElementById('meta-by').value     = m.by     ||'';
+  document.getElementById('meta-to').value     = m.to     ||'';
+}
+function getMeta(){
+  return{
+    date:   document.getElementById('meta-date').value,
+    day:    document.getElementById('meta-day').value,
+    sprint: document.getElementById('meta-sprint').value,
+    by:     document.getElementById('meta-by').value,
+    to:     document.getElementById('meta-to').value
+  };
+}
+
+// ── HIGHLIGHTS ────────────────────────────────────────
+function addHighlight(text=''){
+  const list=document.getElementById('highlights-list');
+  const div=document.createElement('div');
+  div.className='highlight-item';
+  div.innerHTML=`
+    <div class="highlight-dot"></div>
+    <textarea class="highlight-input" placeholder="Enter a highlight...">${text}</textarea>
+    <button class="del-btn" onclick="this.parentElement.remove()">✕</button>`;
+  list.appendChild(div);
+}
+function getHighlights(){
+  return[...document.querySelectorAll('#highlights-list .highlight-input')].map(i=>i.value).filter(Boolean);
+}
+
+// ── TASKS ─────────────────────────────────────────────
+const STATUS_LABELS={'completed':'✅ Done','in-progress':'🔄 In Progress','blocked':'🚫 Blocked','planned':'📅 Planned'};
+function addTask(status='in-progress',text='',start='',end=''){
+  const list=document.getElementById('tasks-list');
+  const div=document.createElement('div');
+  div.className=`task-item ${status}`;
+  div.innerHTML=`
+    <button class="task-del" onclick="this.parentElement.remove()">✕</button>
+    <div class="task-row">
+      <select class="task-status-sel" onchange="updateTaskClass(this)">
+        ${Object.entries(STATUS_LABELS).map(([v,l])=>`<option value="${v}"${v===status?' selected':''}>${l}</option>`).join('')}
+      </select>
+      <textarea class="task-textarea" placeholder="Describe the task...">${text}</textarea>
+    </div>
+    <div class="task-dates">
+      <div class="date-field"><label>Start Date</label><input type="date" value="${start}"></div>
+      <div class="date-field"><label>End Date / ETA</label><input type="text" placeholder="YYYY-MM-DD or TBD / On Hold" value="${end}"></div>
+    </div>`;
+  list.appendChild(div);
+}
+function updateTaskClass(sel){sel.closest('.task-item').className='task-item '+sel.value;}
+function getTasks(){
+  return[...document.querySelectorAll('#tasks-list .task-item')].map(el=>({
+    status:el.querySelector('.task-status-sel').value,
+    text:  el.querySelector('.task-textarea').value,
+    start: el.querySelectorAll('input')[0].value,
+    end:   el.querySelectorAll('input')[1].value
+  }));
+}
+
+// ── NUMBERED LIST (blockers / next steps) ─────────────
+function addListItem(containerId,text=''){
+  const list=document.getElementById(containerId);
+  const num=list.querySelectorAll('.list-item').length+1;
+  const div=document.createElement('div');
+  div.className='list-item';
+  div.innerHTML=`
+    <span class="list-num">${num}.</span>
+    <textarea class="list-input" placeholder="Add item...">${text}</textarea>
+    <button class="del-btn" onclick="removeListItem(this,'${containerId}')">✕</button>`;
+  list.appendChild(div);
+}
+function removeListItem(btn,containerId){
+  btn.parentElement.remove();
+  // renumber
+  document.querySelectorAll(`#${containerId} .list-num`).forEach((el,i)=>el.textContent=`${i+1}.`);
+}
+function getList(id){
+  return[...document.querySelectorAll(`#${id} .list-input`)].map(i=>i.value).filter(Boolean);
+}
+
+// ── GATHER / RENDER ───────────────────────────────────
+function gatherAll(){
+  return{
+    meta:       getMeta(),
+    summary:    document.getElementById('summary').value,
+    highlights: getHighlights(),
+    tasks:      getTasks(),
+    blockers:   getList('blockers-list'),
+    nextSteps:  getList('next-list')
+  };
+}
+function renderAll(d){
+  loadMeta(d.meta||{});
+  document.getElementById('summary').value=d.summary||'';
+  document.getElementById('highlights-list').innerHTML='';
+  (d.highlights||[]).forEach(h=>addHighlight(h));
+  document.getElementById('tasks-list').innerHTML='';
+  (d.tasks||[]).forEach(t=>addTask(t.status,t.text,t.start,t.end));
+  document.getElementById('blockers-list').innerHTML='';
+  (d.blockers||[]).forEach(b=>addListItem('blockers-list',b));
+  document.getElementById('next-list').innerHTML='';
+  (d.nextSteps||[]).forEach(n=>addListItem('next-list',n));
+}
+function clearAll(){
+  if(!confirm('Clear all fields and start fresh?'))return;
+  renderAll({meta:{
+    date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
+    day:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()],
+    sprint:'',by:'Prasanth - Product Manager',to:'Mourali - Managing Director'
+  },summary:'',highlights:[],tasks:[],blockers:[],nextSteps:[]});
+  toast('🗑 Cleared!');
+}
+
+// ── DRAFT MANAGER ─────────────────────────────────────
+function getDrafts(){return JSON.parse(localStorage.getItem('namlatic_drafts')||'[]');}
+function saveDrafts(drafts){localStorage.setItem('namlatic_drafts',JSON.stringify(drafts));}
+
+function saveDraft(){
+  const d=gatherAll();
+  const drafts=getDrafts();
+  const ts=new Date().toISOString();
+  const label=`${d.meta.day||'Report'} — ${d.meta.date||new Date().toLocaleDateString()} (${d.meta.sprint||'No Sprint'})`;
+  drafts.unshift({id:ts,label,savedAt:new Date().toLocaleString(),data:d});
+  saveDrafts(drafts);
+  renderDraftList();
+  toast('✅ Draft saved!');
+}
+
+function renderDraftList(){
+  const drafts=getDrafts();
+  const container=document.getElementById('draft-list');
+  if(!drafts.length){
+    container.innerHTML='<div class="draft-empty">No saved drafts yet. Click "Save Draft" above to save your first report.</div>';
+    return;
+  }
+  container.innerHTML=drafts.map((dr,i)=>`
+    <div class="draft-item">
+      <div class="draft-info">
+        <div class="draft-name">${dr.label}</div>
+        <div class="draft-meta">Saved: ${dr.savedAt}</div>
+      </div>
+      <div class="draft-actions">
+        <button class="dbtn dbtn-load" onclick="loadDraft(${i})">📂 Load</button>
+        <button class="dbtn dbtn-dl"   onclick="downloadDraft(${i})">⬇ JSON</button>
+        <button class="dbtn dbtn-del"  onclick="deleteDraft(${i})">🗑 Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function loadDraft(i){
+  const drafts=getDrafts();
+  renderAll(drafts[i].data);
+  toast(`📂 Loaded: ${drafts[i].label}`);
+}
+function deleteDraft(i){
+  if(!confirm('Delete this draft?'))return;
+  const drafts=getDrafts();
+  drafts.splice(i,1);
+  saveDrafts(drafts);
+  renderDraftList();
+  toast('🗑 Draft deleted!');
+}
+function downloadDraft(i){
+  const drafts=getDrafts();
+  const dr=drafts[i];
+  const blob=new Blob([JSON.stringify(dr.data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`Namlatic_Draft_${dr.label.replace(/[^a-z0-9]/gi,'_')}.json`;
+  a.click();
+  toast('⬇ Draft downloaded!');
+}
+function downloadAllDrafts(){
+  const drafts=getDrafts();
+  if(!drafts.length){toast('No drafts to download.');return;}
+  const blob=new Blob([JSON.stringify(drafts,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`Namlatic_All_Drafts_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast('⬇ All drafts downloaded!');
+}
+
+// ── PDF EXPORT (fixed alignment) ──────────────────────
+function downloadPDF(){
+  const d=gatherAll();
+  toast('⏳ Generating PDF...');
+  setTimeout(()=>{
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const PW=210,M=15,CW=PW-M*2;
+    let y=0;
+
+    function checkPage(needed=10){
+      if(y+needed>285){pdf.addPage();y=14;}
+    }
+
+    // Header
+    pdf.setFillColor(30,42,58);
+    pdf.rect(0,0,PW,32,'F');
+    pdf.setTextColor(255,255,255);
+    pdf.setFontSize(17);pdf.setFont('helvetica','bold');
+    pdf.text('NAMLATIC — WEEKLY STATUS REPORT',M,13);
+    pdf.setFontSize(9);pdf.setFont('helvetica','normal');
+    pdf.text(`${d.meta.day||''}  ·  ${d.meta.date||''}  ·  ${d.meta.sprint||''}`,M,21);
+    pdf.text(`Prepared by: ${d.meta.by||''}   |   Submitted to: ${d.meta.to||''}`,M,28);
+    y=40;
+
+    // Section header
+    function sectionHeader(title,r,g,b){
+      checkPage(12);
+      pdf.setFillColor(r,g,b);
+      pdf.rect(M,y,CW,8,'F');
+      pdf.setTextColor(255,255,255);
+      pdf.setFontSize(10);pdf.setFont('helvetica','bold');
+      pdf.text(title,M+4,y+5.5);
+      y+=11;
+      pdf.setTextColor(30,42,58);
+    }
+
+    // Wrapped text helper — returns new y
+    function wrappedText(txt,x,width,size,bold){
+      pdf.setFontSize(size);
+      pdf.setFont('helvetica',bold?'bold':'normal');
+      const lines=pdf.splitTextToSize(String(txt),width);
+      lines.forEach(l=>{checkPage(6);pdf.text(l,x,y);y+=5.5;});
+    }
+
+    // ── SUMMARY ──
+    if(d.summary){
+      sectionHeader('EXECUTIVE SUMMARY',249,115,22);
+      wrappedText(d.summary,M+2,CW-4,10,false);
+      y+=4;
+    }
+
+    // ── HIGHLIGHTS ──
+    if(d.highlights.length){
+      sectionHeader('HIGHLIGHTS',16,185,129);
+      d.highlights.forEach(h=>{
+        checkPage(8);
+        pdf.setFillColor(249,115,22);
+        pdf.circle(M+3,y-1.2,1.2,'F');
+        wrappedText(h,M+8,CW-10,10,false);
+        y+=1;
+      });
+      y+=3;
+    }
+
+    // ── TASKS ── (fixed: each task is a box)
+    if(d.tasks.length){
+      sectionHeader('TASK STATUS',59,130,246);
+      const statusMeta={
+        'completed':  {label:'DONE',        r:16,  g:185,b:129},
+        'in-progress':{label:'IN PROGRESS', r:245, g:158,b:11},
+        'blocked':    {label:'BLOCKED',     r:244, g:63, b:94},
+        'planned':    {label:'PLANNED',     r:59,  g:130,b:246}
+      };
+      d.tasks.forEach((t,idx)=>{
+        const sm=statusMeta[t.status]||{label:t.status.toUpperCase(),r:100,g:100,b:100};
+        checkPage(28);
+
+        // Task number + status badge on same row
+        pdf.setFillColor(sm.r,sm.g,sm.b);
+        pdf.roundedRect(M,y,32,7,1.5,1.5,'F');
+        pdf.setTextColor(255,255,255);
+        pdf.setFontSize(8.5);pdf.setFont('helvetica','bold');
+        pdf.text(`#${idx+1} ${sm.label}`,M+2.5,y+4.8);
+
+        // Start / End on same row (right side)
+        pdf.setTextColor(var_slate=100);
+        pdf.setFontSize(8.5);pdf.setFont('helvetica','normal');
+        const dateStr=`Start: ${t.start||'—'}   End/ETA: ${t.end||'—'}`;
+        pdf.text(dateStr,M+36,y+4.8);
+        y+=10;
+
+        // Task description
+        pdf.setTextColor(30,42,58);
+        wrappedText(t.text,M+3,CW-6,10,false);
+
+        // Divider between tasks
+        pdf.setDrawColor(220,220,220);
+        pdf.line(M,y+2,M+CW,y+2);
+        y+=6;
+      });
+      y+=2;
+    }
+
+    // ── BLOCKERS ──
+    if(d.blockers.length){
+      sectionHeader('BLOCKERS',244,63,94);
+      d.blockers.forEach((b,i)=>{
+        checkPage(8);
+        pdf.setFontSize(10);pdf.setFont('helvetica','bold');
+        pdf.setTextColor(244,63,94);
+        pdf.text(`${i+1}.`,M+2,y);
+        pdf.setTextColor(30,42,58);
+        pdf.setFont('helvetica','normal');
+        const lines=pdf.splitTextToSize(b,CW-12);
+        lines.forEach(l=>{pdf.text(l,M+9,y);y+=5.5;});
+        y+=1;
+      });
+      y+=3;
+    }
+
+    // ── NEXT STEPS ──
+    if(d.nextSteps.length){
+      sectionHeader('NEXT STEPS',139,92,246);
+      d.nextSteps.forEach((n,i)=>{
+        checkPage(8);
+        pdf.setFontSize(10);pdf.setFont('helvetica','bold');
+        pdf.setTextColor(139,92,246);
+        pdf.text(`${i+1}.`,M+2,y);
+        pdf.setTextColor(30,42,58);
+        pdf.setFont('helvetica','normal');
+        const lines=pdf.splitTextToSize(n,CW-12);
+        lines.forEach(l=>{pdf.text(l,M+9,y);y+=5.5;});
+        y+=1;
+      });
+      y+=3;
+    }
+
+    // Footer
+    pdf.setFontSize(8);pdf.setTextColor(160,160,160);
+    pdf.text(`Namlatic.com · Auto-generated · ${new Date().toLocaleString()}`,M,291);
+
+    pdf.save(`Namlatic_Report_${(d.meta.date||'report').replace(/\s+/g,'_')}.pdf`);
+    toast('✅ PDF downloaded!');
+  },300);
+}
+
+// ── EXCEL EXPORT ──────────────────────────────────────
+function downloadExcel(){
+  const d=gatherAll();
+  const rows=[];
+  rows.push(['NAMLATIC WEEKLY STATUS REPORT']);
+  rows.push(['Date',d.meta.date,'Day',d.meta.day]);
+  rows.push(['Sprint',d.meta.sprint,'Prepared By',d.meta.by]);
+  rows.push(['Submitted To',d.meta.to]);
+  rows.push([]);
+  rows.push(['EXECUTIVE SUMMARY']);
+  rows.push([d.summary]);
+  rows.push([]);
+  rows.push(['HIGHLIGHTS']);
+  d.highlights.forEach((h,i)=>rows.push([`${i+1}.`,h]));
+  rows.push([]);
+  rows.push(['TASK STATUS']);
+  rows.push(['#','Status','Task Description','Start Date','End / ETA']);
+  d.tasks.forEach((t,i)=>rows.push([i+1,t.status.toUpperCase(),t.text,t.start,t.end]));
+  rows.push([]);
+  rows.push(['BLOCKERS']);
+  d.blockers.forEach((b,i)=>rows.push([`${i+1}.`,b]));
+  rows.push([]);
+  rows.push(['NEXT STEPS']);
+  d.nextSteps.forEach((n,i)=>rows.push([`${i+1}.`,n]));
+
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:6},{wch:18},{wch:60},{wch:14},{wch:14}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Weekly Report');
+  XLSX.writeFile(wb,`Namlatic_Report_${(d.meta.date||'report').replace(/\s+/g,'_')}.xlsx`);
+  toast('✅ Excel downloaded!');
+}
+
+// ── INIT ──────────────────────────────────────────────
+window.onload=()=>{
+  renderDraftList();
+  const drafts=getDrafts();
+  if(drafts.length){
+    renderAll(drafts[0].data);
+    toast('📂 Last draft loaded automatically!');
+  } else {
+    renderAll({
+      meta:{
+        date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
+        day:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()],
+        sprint:'Sprint 1',
+        by:'Prasanth - Product Manager',
+        to:'Mourali - Managing Director'
+      },
+      summary:'',
+      highlights:['Enforced requirements-freezing protocol across the BA & PA team to eliminate scope creep.'],
+      tasks:[
+        {status:'in-progress',text:'Sindhu actively collaborating with Amadeus technical teams on quick-response debugging for the Flight Order Management API.',start:'2026-06-18',end:''},
+        {status:'blocked',    text:'DZD Voucher email template modifications require a direct signed-off design confirmation before production deployment.',start:'2026-06-22',end:'On Hold'}
+      ],
+      blockers:['Requirement Freezing - Static exchange rate'],
+      nextSteps:['Continue Namla Wallet development','Finalise SEO Phase 1 page list','Review Cursor AI team feedback','Combination flights - separate for arrival & departure']
+    });
+  }
+};
+</script>
+</body>
+</html>
