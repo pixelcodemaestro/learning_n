@@ -4,7 +4,7 @@
 set -e
 
 # CONTAINER_NAME="poland"
-# PORT="0000"
+# PORT="8888"
 
 echo "=================================================="
 # echo "🏗️  Starting Build & Deployment for: $CONTAINER_NAME"
@@ -23,17 +23,19 @@ if [ ! -f "Dockerfile" ]; then
 fi
 
 echo "🔄 Step 1: Taking down existing container if running..."
-docker compose down --remove-orphans
+# docker compose down --remove-orphans
 
 echo "🔨 Step 2: Compiling assets and rebuilding local image..."
 # Forces docker-compose to read your Dockerfile and compile fresh code
-docker compose build --no-cache
+# docker compose build --no-cache
+docker build -t siluku:1 .  
+docker run -d --name siluku -p 8888:80 siluku:1
 
 # echo "🚀 Step 3: Launching $CONTAINER_NAME in the background..."
-docker compose up -d
+# docker compose up -d
 
 echo "🧹 Step 4: Cleaning up older build caches to save space..."
-docker image prune -f
+# docker image prune -f
 
 echo "=================================================="
 echo "✅ Deployment Successful!"
