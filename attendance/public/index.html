@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Attendance</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        button {
+            padding: 8px 15px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .present {
+            background: green;
+        }
+
+        .absent {
+            background: red;
+        }
+
+        #summary {
+            width: 80%;
+            margin: 20px auto;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🏫 School Attendance System</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Roll No</th>
+            <th>Name</th>
+            <th>Attendance</th>
+        </tr>
+    </thead>
+
+    <tbody id="studentTable">
+
+    </tbody>
+</table>
+
+<div id="summary">
+    Present: <span id="presentCount">0</span> |
+    Absent: <span id="absentCount">0</span>
+</div>
+
+<script>
+
+const students = [
+    { roll: 1, name: "Rahul" },
+    { roll: 2, name: "Priya" },
+    { roll: 3, name: "Arun" },
+    { roll: 4, name: "Sneha" },
+    { roll: 5, name: "Karthik" }
+];
+
+let present = 0;
+let absent = 0;
+
+const table = document.getElementById("studentTable");
+
+students.forEach(student => {
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>${student.roll}</td>
+        <td>${student.name}</td>
+        <td>
+            <button class="present" onclick="markAttendance(this, true)">Present</button>
+            <button class="absent" onclick="markAttendance(this, false)">Absent</button>
+        </td>
+    `;
+
+    table.appendChild(row);
+
+});
+
+function markAttendance(button, isPresent){
+
+    const buttons = button.parentElement.querySelectorAll("button");
+
+    buttons.forEach(btn => btn.disabled = true);
+
+    if(isPresent){
+        present++;
+    }else{
+        absent++;
+    }
+
+    document.getElementById("presentCount").innerText = present;
+    document.getElementById("absentCount").innerText = absent;
+
+}
+
+</script>
+
+</body>
+</html>
