@@ -3,7 +3,7 @@ kind: Deployment
 
 metadata:
   name: attendance
-  namespace: test
+  namespace: attendance
 spec:
   replicas: 2
 
@@ -20,7 +20,7 @@ spec:
       containers:
       - name: attendance
 
-        image: imsprasanth/attendance:v1
+        image: imsprasanth/attendance:v2
 
         ports:
-        - containerPort: 80
+        - containerPort: 3000
