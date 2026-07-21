@@ -3,7 +3,7 @@ kind: Deployment
 
 metadata:
   name: learning
-
+  namespace: test
 spec:
   replicas: 2
 

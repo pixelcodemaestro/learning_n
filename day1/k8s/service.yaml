@@ -3,6 +3,7 @@ kind: Service
 
 metadata:
   name: learning-service
+  namespace: test
 
 spec:
   type: NodePort
@@ -13,4 +14,4 @@ spec:
   ports:
   - port: 80
     targetPort: 80
-    nodePort: 1234
+    nodePort: 30080

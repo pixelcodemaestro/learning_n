@@ -4,30 +4,19 @@ pipeline {
 
     environment {
 
-        IMAGE_NAME = "imsprasanth/learning"
+        IMAGE = "imsprasanth/learning:${BUILD_NUMBER}"
 
-        TAG = "${BUILD_NUMBER}"
     }
 
     stages {
 
-        stage('Clone') {
+        stage('Clone Repository') {
 
             steps {
 
                 git branch: 'main',
+                    url: 'https://github.com/pixelcodemaestro/learning_n.git'
 
-                url: 'https://github.com/<username>/<repo>.git'
-            }
-        }
-
-        stage('Build Docker Image') {
-
-            steps {
-
-                sh """
-                docker build -t $IMAGE_NAME:$TAG .
-                """
             }
         }
 
@@ -35,20 +24,24 @@ pipeline {
 
             steps {
 
-                withCredentials([usernamePassword(
+                sh '''
+                echo YOUR_DOCKER_TOKEN | docker login \
+                -u imsprasanth \
+                --password-stdin
+                '''
+            }
+        }
 
-                    credentialsId: 'dockerhub',
+        stage('Build Docker Image') {
 
-                    usernameVariable: 'USER',
+            steps {
 
-                    passwordVariable: 'PASS'
+                sh '''
 
-                )]) {
+                docker build \
+                -t $IMAGE .
 
-                    sh '''
-                    echo $PASS | docker login -u $USER --password-stdin
-                    '''
-                }
+                '''
             }
         }
 
@@ -56,22 +49,61 @@ pipeline {
 
             steps {
 
-                sh """
-                docker push $IMAGE_NAME:$TAG
-                """
+                sh '''
+
+                docker push $IMAGE
+
+                '''
             }
         }
 
-        stage('Deploy to Minikube') {
+        stage('Update Kubernetes Manifest') {
 
             steps {
 
-                sh """
-                sed -i 's|image:.*|image: $IMAGE_NAME:$TAG|' k8s/deployment.yaml
+                sh '''
 
-                kubectl apply -f k8s/
-                """
+                sed -i "s|imsprasanth/learning:.*|$IMAGE|g" \
+                k8s/deployment.yaml
+
+                '''
+
             }
+
+        }
+
+        stage('Deploy to Kubernetes') {
+
+            steps {
+
+                sh '''
+
+                kubectl apply -f k8s/deployment.yaml
+
+                kubectl apply -f k8s/service.yaml
+
+                '''
+
+            }
+
+        }
+
+        stage('Verify Deployment') {
+
+            steps {
+
+                sh '''
+
+                kubectl rollout status deployment/learning -n test
+
+                kubectl get pods -n test
+
+                kubectl get svc -n test
+
+                '''
+
+            }
+
         }
 
     }
