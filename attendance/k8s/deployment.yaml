@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: attendance
+  namespace: test
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: attendance
+
+  template:
+    metadata:
+      labels:
+        app: attendance
+
+    spec:
+      containers:
+      - name: attendance
+
+        image: imsprasanth/attendance:v1
+
+        ports:
+        - containerPort: 80
