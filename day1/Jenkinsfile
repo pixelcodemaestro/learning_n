@@ -1,0 +1,79 @@
+pipeline {
+
+    agent any
+
+    environment {
+
+        IMAGE_NAME = "imsprasanth/learning"
+
+        TAG = "${BUILD_NUMBER}"
+    }
+
+    stages {
+
+        stage('Clone') {
+
+            steps {
+
+                git branch: 'main',
+
+                url: 'https://github.com/<username>/<repo>.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+
+            steps {
+
+                sh """
+                docker build -t $IMAGE_NAME:$TAG .
+                """
+            }
+        }
+
+        stage('Docker Login') {
+
+            steps {
+
+                withCredentials([usernamePassword(
+
+                    credentialsId: 'dockerhub',
+
+                    usernameVariable: 'USER',
+
+                    passwordVariable: 'PASS'
+
+                )]) {
+
+                    sh '''
+                    echo $PASS | docker login -u $USER --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Push Image') {
+
+            steps {
+
+                sh """
+                docker push $IMAGE_NAME:$TAG
+                """
+            }
+        }
+
+        stage('Deploy to Minikube') {
+
+            steps {
+
+                sh """
+                sed -i 's|image:.*|image: $IMAGE_NAME:$TAG|' k8s/deployment.yaml
+
+                kubectl apply -f k8s/
+                """
+            }
+        }
+
+    }
+
+}

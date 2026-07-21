@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: learning
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: learning
+
+  template:
+    metadata:
+      labels:
+        app: learning
+
+    spec:
+      containers:
+      - name: learning
+
+        image: imsprasanth/learning:v1
+
+        ports:
+        - containerPort: 80

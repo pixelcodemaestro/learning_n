@@ -3,7 +3,7 @@ version: "3.9"
 services:
   aiyhdan:
     build: .
-    container_name: usha
+    container_name: day1
     ports:
       - "1234:80"
     restart: unless-stopped
