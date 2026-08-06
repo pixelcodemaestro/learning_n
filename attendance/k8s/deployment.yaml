@@ -2,25 +2,25 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: attendance
-  namespace: attendance
+  name: kkl
+  namespace: cartoon
 spec:
   replicas: 2
 
   selector:
     matchLabels:
-      app: attendance
+      app: kkl
 
   template:
     metadata:
       labels:
-        app: attendance
+        app: kkl
 
     spec:
       containers:
-      - name: attendance
+      - name: kklafeRestart
 
-        image: imsprasanth/attendance:v2
+        image: imsprasanth/kkl:1
 
         ports:
         - containerPort: 3000
