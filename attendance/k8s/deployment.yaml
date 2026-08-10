@@ -2,25 +2,37 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: kkl
-  namespace: cartoon
+  name: iphonev2
+  namespace: marathi
 spec:
-  replicas: 2
+  replicas: 1
 
   selector:
     matchLabels:
-      app: kkl
+      app: iphonev2
 
   template:
     metadata:
       labels:
-        app: kkl
+        app: iphonev2
 
     spec:
       containers:
-      - name: kklafeRestart
+      - name: iphonev2
 
         image: imsprasanth/kkl:1
 
         ports:
         - containerPort: 3000
+      resources:
+
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+
+        limits:
+          cpu: "500m"
+          memory: "256Mi"
+
+##kubectl autoscale deployment iphone --cpu-percent=50 --min=1 --max=5  -n marathi
+## hey -n 100000 -c 500 http://192.168.49.2:30087
