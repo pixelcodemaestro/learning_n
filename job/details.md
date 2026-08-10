@@ -257,3 +257,17 @@ Bitbucket Source code management and version control (Git)
 ArgoCD
 Artifactory Centralized repository for build artifacts and code packages
 OpenShift – Container orchestration platform based on Kubernetes
+SonarQube (Quality Gates configuration & integration)
+
+#### Azure Services:
+
+Azure Cosmos DB
+Azure App Service
+Application Gateway
+
+
+## connct
+
+Hi, I came across your profile while exploring DevOps opportunities. I'd love to connect and grow my professional network. Looking forward to connecting!
+
+## rely to email
