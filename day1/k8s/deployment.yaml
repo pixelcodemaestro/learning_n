@@ -2,25 +2,39 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: learning
-  namespace: test
+  name: siluku
+  namespace: application1
 spec:
-  replicas: 2
+  replicas: 3
 
   selector:
     matchLabels:
-      app: learning
+      app: siluku
 
   template:
     metadata:
       labels:
-        app: learning
+        app: siluku
 
     spec:
       containers:
-      - name: learning
+      - name: siluku
 
         image: imsprasanth/learning:v1
 
         ports:
         - containerPort: 80
+---
+# apiVersion: v1
+# kind: Pod
+
+# metadata:
+#   name: siluku
+#   namespace: application1
+
+# spec:
+#   containers:
+#     - name: siluku
+#       image: imsprasanth/learning:v1
+#       ports:
+#         - containerPort: 3000
