@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: demo-cron
+  namespace: application1
+
+spec:
+  schedule: "* * * * *"
+
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 1
+
+  jobTemplate:
+
+    spec:
+
+      template:
+
+        spec:
+
+          restartPolicy: Never
+
+          containers:
+
+          - name: demo
+
+            image: busybox
+
+            command:
+            - sh
+            - -c
+            - |
+              echo "CronJob Started"
+              sleep 20
+              echo "CronJob Finished"
+
+              ttlSecondsAfterFinished: 30
