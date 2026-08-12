@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: app-config
+  namespace: posch
+
+data:
+  APP_NAME: posch
+  DB_HOST: mysql
+  DB_PORT: "3306"
+  ENV: Production
