@@ -4,17 +4,17 @@ kind: RoleBinding
 metadata:
   name: developer-binding
 
-  namespace: application1
+  namespace: rowdy
 
 subjects:
 
 - kind: ServiceAccount
-  name: partha
-  namespace: application1
+  name: abi
+  namespace: rowdy
 
 - kind: ServiceAccount
   name: sakthi
-  namespace: application1
+  namespace: rowdy
 
 roleRef:
 

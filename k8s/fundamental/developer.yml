@@ -3,7 +3,7 @@ kind: Role
 
 metadata:
   name: developer-role
-  namespace: application1
+  namespace: rowdy
 
 rules:
 - apiGroups: ["", "apps"]
@@ -12,7 +12,9 @@ rules:
   - pods
   - deployments
   - services
+  - configmaps
 
+  
   verbs:
   - get
   - list

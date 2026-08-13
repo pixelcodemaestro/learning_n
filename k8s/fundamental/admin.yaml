@@ -3,7 +3,7 @@ kind: Role
 
 metadata:
   name: admin-role
-  namespace: application1
+  namespace: rowdy
 
 rules:
 - apiGroups: ["", "apps"]

@@ -3,10 +3,10 @@ kind: ConfigMap
 
 metadata:
   name: app-config
-  namespace: posch
+  namespace: rowdy
 
 data:
-  APP_NAME: posch
-  DB_HOST: mysql
-  DB_PORT: "3306"
+  APP_NAME: prasanth
+  DB_HOST: 3006
+  DB_PORT: "8800"
   ENV: Production
