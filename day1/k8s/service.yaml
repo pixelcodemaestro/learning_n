@@ -3,9 +3,9 @@ kind: Service
 
 metadata:
   name: siluku-service
-  namespace: application1
+  namespace: test
 spec:
-  type: NodePort
+  type: LoadBalancer
 
   selector:
     app: siluku
