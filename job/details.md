@@ -284,3 +284,8 @@ Prasanth M
 
 ## workday
 Password: Prasanth@12121992
+
+## Reply
+Hi Rose Hernandez,
+ I’m interested in the Senior DevOps Engineer opportunity at OpenAssets Inc. 
+ I have 8+ years of experience in DevOps, with strong expertise in Azure, Kubernetes, Terraform, Docker, CI/CD, Jenkins,Github Actions, Azure-devops, cloud architecture, and infrastructure automation. I’d be glad to discuss how my experience aligns with the role.
