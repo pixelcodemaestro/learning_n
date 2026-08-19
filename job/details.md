@@ -272,6 +272,15 @@ Hi, I came across your profile while exploring DevOps opportunities. I'd love to
 
 ## rely to email
 
+Hi Akshaya,
+
+Thank you for sharing the details and the job description. I acknowledge receipt and appreciate the opportunity to discuss the Observability Technical Lead role.
+
+I look forward to the next steps.
+
+Best regards,
+Prasanth M
+
 
 ## workday
 Password: Prasanth@12121992
